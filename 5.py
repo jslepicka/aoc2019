@@ -1,7 +1,7 @@
 class intcode_machine:
     OPCODE_HALT = 99
 
-    def __init__(self):
+    def __init__(self, mem_size = 4096):
         self.opcodes = {
             1: self.op_sum,
             2: self.op_mul,
@@ -13,10 +13,11 @@ class intcode_machine:
             8: self.op_store_eq,
             99: self.op_halt
         }
+        self.mem_size = mem_size
         self.reset()
 
     def reset(self):
-        self.mem = [0] * 4096
+        self.mem = [0] * self.mem_size
         self.pc = 0
         self.mode1 = 0
         self.mode2 = 0
