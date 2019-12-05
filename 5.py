@@ -1,112 +1,132 @@
-mem = []
+class intcode_machine:
+    OPCODE_HALT = 99
 
-def load_mem():
-    global mem
-    mem = [0] * 4096
-    with open("5.txt") as f:
-        x = f.readline()
-        i = 0
+    def __init__(self):
+        self.opcodes = {
+            1: self.op_sum,
+            2: self.op_mul,
+            3: self.op_input,
+            4: self.op_output,
+            5: self.op_jmp_true,
+            6: self.op_jmp_false,
+            7: self.op_store_lt,
+            8: self.op_store_eq,
+            99: self.op_halt
+        }
+        self.reset()
+
+    def reset(self):
+        self.mem = [0] * 4096
+        self.pc = 0
+        self.mode1 = 0
+        self.mode2 = 0
+        self.mode3 = 0
+
+    def read(self, a, mode):
+        if mode == 0: #position (indirect)
+            v = self.mem[a]
+            print("read %d from %d" % (v, a))
+            return v
+        elif mode == 1: #immediate
+            print("direct read %d" % a)
+            return a
+        print("ERR")
+    
+    def write(self, value, a, mode):
+        if mode == 0: #position (indirect)
+            print("indirect write %d to %d" % (value, a))
+            self.mem[a] = value
+            return
+        elif mode == 1: #immediate -- invalid for writes
+            print("Invalid mode!")
+            quit()
+
+    def op_sum(self):
+        a = self.read(self.mem[self.pc+1], self.mode1)
+        b = self.read(self.mem[self.pc+2], self.mode2)
+        self.write(a+b, self.mem[self.pc+3], self.mode3)
+        self.pc += 4
+
+    def op_mul(self):
+        a = self.read(self.mem[self.pc+1], self.mode1)
+        b = self.read(self.mem[self.pc+2], self.mode2)
+        self.write(a*b, self.mem[self.pc+3], self.mode3)
+        self.pc += 4
+
+    def op_input(self):
+        print("Input:")
+        i = int(input())
+        print("User input %d" % (i))
+        self.write(i, self.mem[self.pc+1], self.mode1)
+        self.pc += 2
+
+    def op_output(self):
+        v = self.read(self.mem[self.pc+1], self.mode1)
+        print("Output: %d" % (v))
+        self.pc += 2
+
+    def op_jmp_true(self):
+        test = self.read(self.mem[self.pc+1], self.mode1)
+        target = self.read(self.mem[self.pc+2], self.mode2)
+        if test != 0:
+            self.pc = target
+        else:
+            self.pc += 3
+
+    def op_jmp_false(self):
+        test = self.read(self.mem[self.pc+1], self.mode1)
+        target = self.read(self.mem[self.pc+2], self.mode2)
+        if test == 0:
+            self.pc = target
+        else:
+            self.pc += 3
+
+    def op_store_lt(self):
+        a = self.read(self.mem[self.pc+1], self.mode1)
+        b = self.read(self.mem[self.pc+2], self.mode2)
+        dest = self.mem[self.pc+3]
+        if a < b:
+            self.write(1, dest, self.mode3)
+        else:
+            self.write(0, dest, self.mode3)
+        self.pc += 4
+
+    def op_store_eq(self):
+        a = self.read(self.mem[self.pc+1], self.mode1)
+        b = self.read(self.mem[self.pc+2], self.mode2)
+        dest = self.mem[self.pc+3]
+        if a == b:
+            self.write(1, dest, self.mode3)
+        else:
+            self.write(0, dest, self.mode3)
+        self.pc += 4
+
+    def op_halt(self):
+        return
+
+    def decode_opcode(self, opcode):
+            op = int(opcode % 100)
+            self.mode1 = int((opcode / 100) % 2)
+            self.mode2 = int((opcode / 1000) % 2)
+            self.mode3 = int((opcode / 10000) % 2)
+            return op
+
+    def load_mem(self, filename):
+        with open(filename) as f:
+            x = f.readline()
+            i = 0
         for b in x.rstrip().split(","):
-            mem[i] = int(b)
+            self.mem[i] = int(b)
             i += 1
 
-def read(a, mode):
-    if mode == 0: #position (indirect)
-        v = mem[a]
-        print("read %d from %d" % (v, a))
-        return v
-    elif mode == 1: #immediate
-        print("direct read %d" % a)
-        return a
-    print("ERR")
-    return
-def write(value, a, mode):
-    if mode == 0: #position (indirect)
-        print("indirect write %d to %d" % (value, a))
-        mem[a] = value
-        return
-    elif mode == 1: #immediate -- invalid for writes
-        print("Invalid mode!")
-        quit()
-
-    return
-
-def run():
-    global mem
-    pc = 0
-    while True:
-            raw = int(mem[pc])
-            opcode = int(raw % 100)
-            mode1 = int((raw / 100) % 2)
-            mode2 = int((raw / 1000) % 2)
-            mode3 = int((raw / 10000) % 2)
-            print("PC = %d raw = %d opcode = %d modes = %d %d %d" % (pc, raw, opcode, mode1, mode2, mode3))
-            if opcode == 1:
-                a = read(mem[pc+1], mode1)
-                b = read(mem[pc+2], mode2)
-                write(a+b, mem[pc+3], mode3)
-                #mem[mem[pc+3]] = mem[mem[pc+1]] + mem[mem[pc+2]]
-                pc += 4
-            elif opcode == 2:
-                a = read(mem[pc+1], mode1)
-                b = read(mem[pc+2], mode2)
-                write(a*b, mem[pc+3], mode3)
-                pc += 4
-            elif opcode == 3: #input
-                print("Enter ID of system to test:")
-                i = input()
-                i = int(i)
-                print("User input %d" % (i))
-                write(i, mem[pc+1], mode1)
-                print(pc)
-                pc += 2
-                print(pc)
-            elif opcode == 4: #output
-                v = read(mem[pc+1], mode1)
-                print("Output: %d" % (v))
-                pc += 2
-            elif opcode == 5: #jump if true
-                test = read(mem[pc+1], mode1)
-                target = read(mem[pc+2], mode2)
-                if test != 0:
-                    pc = target
-                else:
-                    pc += 3
-            elif opcode == 6: #jump if false
-                test = read(mem[pc+1], mode1)
-                target = read(mem[pc+2], mode2)
-                if test == 0:
-                    pc = target
-                else:
-                    pc += 3
-            elif opcode == 7: #if less than, store 1 in 3rd
-                a = read(mem[pc+1], mode1)
-                b = read(mem[pc+2], mode2)
-                dest = mem[pc+3]
-                if a < b:
-                    write(1, dest, mode3)
-                else:
-                    write(0, dest, mode3)
-                pc += 4
-            elif opcode == 8: #if equals, store 1 in 3rd
-                a = read(mem[pc+1], mode1)
-                b = read(mem[pc+2], mode2)
-                dest = mem[pc+3]
-                if a == b:
-                    write(1, dest, mode3)
-                else:
-                    write(0, dest, mode3)
-                pc += 4
-            elif opcode == 99:
-                #print("halt")
+    def run(self):
+        while True:
+            op = self.decode_opcode(self.mem[self.pc])
+            print("PC = %d raw = %d opcode = %d modes = %d %d %d" % (self.pc, self.mem[self.pc], op, self.mode1, self.mode2, self.mode3))
+            if op == self.OPCODE_HALT:
                 break
-            else:
-                print("Invalid opcode: %d" % (opcode))
-                break
+            self.opcodes[op]()
 
-def part1():
-    global mem
-    load_mem()
-    run()
-
-part1()
+im = intcode_machine()
+im.load_mem("5.txt")
+im.run()
