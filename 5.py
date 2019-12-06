@@ -23,7 +23,8 @@ class intcode_machine:
         self.mode2 = 0
         self.mode3 = 0
 
-    def read(self, a, mode):
+    def read(self, address, mode):
+        a = self.mem[address]
         if mode == 0: #position (indirect)
             v = self.mem[a]
             print("read %d from %d" % (v, a))
@@ -33,7 +34,8 @@ class intcode_machine:
             return a
         print("ERR")
     
-    def write(self, value, a, mode):
+    def write(self, value, address, mode):
+        a = self.mem[address]
         if mode == 0: #position (indirect)
             print("indirect write %d to %d" % (value, a))
             self.mem[a] = value
@@ -43,49 +45,49 @@ class intcode_machine:
             quit()
 
     def op_sum(self):
-        a = self.read(self.mem[self.pc+1], self.mode1)
-        b = self.read(self.mem[self.pc+2], self.mode2)
-        self.write(a+b, self.mem[self.pc+3], self.mode3)
+        a = self.read(self.pc+1, self.mode1)
+        b = self.read(self.pc+2, self.mode2)
+        self.write(a+b, self.pc+3, self.mode3)
         self.pc += 4
 
     def op_mul(self):
-        a = self.read(self.mem[self.pc+1], self.mode1)
-        b = self.read(self.mem[self.pc+2], self.mode2)
-        self.write(a*b, self.mem[self.pc+3], self.mode3)
+        a = self.read(self.pc+1, self.mode1)
+        b = self.read(self.pc+2, self.mode2)
+        self.write(a*b, self.pc+3, self.mode3)
         self.pc += 4
 
     def op_input(self):
         print("Input:")
         i = int(input())
         print("User input %d" % (i))
-        self.write(i, self.mem[self.pc+1], self.mode1)
+        self.write(i, self.pc+1, self.mode1)
         self.pc += 2
 
     def op_output(self):
-        v = self.read(self.mem[self.pc+1], self.mode1)
+        v = self.read(self.pc+1, self.mode1)
         print("Output: %d" % (v))
         self.pc += 2
 
     def op_jmp_true(self):
-        test = self.read(self.mem[self.pc+1], self.mode1)
-        target = self.read(self.mem[self.pc+2], self.mode2)
+        test = self.read(self.pc+1, self.mode1)
+        target = self.read(self.pc+2, self.mode2)
         if test != 0:
             self.pc = target
         else:
             self.pc += 3
 
     def op_jmp_false(self):
-        test = self.read(self.mem[self.pc+1], self.mode1)
-        target = self.read(self.mem[self.pc+2], self.mode2)
+        test = self.read(self.pc+1, self.mode1)
+        target = self.read(self.pc+2, self.mode2)
         if test == 0:
             self.pc = target
         else:
             self.pc += 3
 
     def op_store_lt(self):
-        a = self.read(self.mem[self.pc+1], self.mode1)
-        b = self.read(self.mem[self.pc+2], self.mode2)
-        dest = self.mem[self.pc+3]
+        a = self.read(self.pc+1, self.mode1)
+        b = self.read(self.pc+2, self.mode2)
+        dest = self.pc+3
         if a < b:
             self.write(1, dest, self.mode3)
         else:
@@ -93,9 +95,9 @@ class intcode_machine:
         self.pc += 4
 
     def op_store_eq(self):
-        a = self.read(self.mem[self.pc+1], self.mode1)
-        b = self.read(self.mem[self.pc+2], self.mode2)
-        dest = self.mem[self.pc+3]
+        a = self.read(self.pc+1, self.mode1)
+        b = self.read(self.pc+2, self.mode2)
+        dest = self.pc+3
         if a == b:
             self.write(1, dest, self.mode3)
         else:
@@ -115,7 +117,7 @@ class intcode_machine:
     def load_mem(self, filename):
         with open(filename) as f:
             x = f.readline()
-            i = 0
+        i = 0
         for b in x.rstrip().split(","):
             self.mem[i] = int(b)
             i += 1
