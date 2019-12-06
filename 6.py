@@ -14,12 +14,9 @@ def get_orbit_count():
     orbit_count = 0
     for p in planets.keys():
         x = planets[p].name
-        while True:
-            if x in planets and planets[x].parent_name is not None:
-                x = planets[x].parent_name
-                orbit_count += 1
-            else:
-                break
+        while x in planets and planets[x].parent_name is not None:
+            x = planets[x].parent_name
+            orbit_count += 1
     return orbit_count
 
 def path_to_root(start):
@@ -31,7 +28,6 @@ def path_to_root(start):
     return path
     
 def get_transfer_count(planet1, planet2):
-    count = 0
     path1 = path_to_root(planet1)
     path2 = path_to_root(planet2)
     for p in path1:
