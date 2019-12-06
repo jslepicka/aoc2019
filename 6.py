@@ -10,16 +10,7 @@ with open("6.txt") as file:
         (parent, p) = line.split(")")
         planets[p] = planet(p, parent)
 
-def get_orbit_count():
-    orbit_count = 0
-    for p in planets.keys():
-        x = planets[p].name
-        while x in planets and planets[x].parent_name is not None:
-            x = planets[x].parent_name
-            orbit_count += 1
-    return orbit_count
-
-def path_to_root(start):
+def get_path_to_root(start):
     path = []
     x = planets[start].name
     while x in planets and planets[x].parent_name is not None:
@@ -28,12 +19,16 @@ def path_to_root(start):
     return path
     
 def get_transfer_count(planet1, planet2):
-    path1 = path_to_root(planet1)
-    path2 = path_to_root(planet2)
+    path1 = get_path_to_root(planet1)
+    path2 = get_path_to_root(planet2)
     for p in path1:
         if p in path2:
             return path1.index(p) + path2.index(p)
     return None
 
-print("%d orbits" % get_orbit_count())
+orbit_count = 0
+for p in planets:
+    orbit_count += len(get_path_to_root(planets[p].name))
+
+print("%d orbits" % orbit_count)
 print("%d transfers between YOU and SAN" % get_transfer_count("YOU", "SAN"))
