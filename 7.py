@@ -125,7 +125,6 @@ class intcode_machine:
             i += 1
     
     def add_input(self, i):
-        #self.inp.append(i)
         self.input_queue.append(i)
 
     def run(self):
