@@ -1,9 +1,10 @@
+from collections import deque
 from itertools import permutations
 
 class intcode_machine:
     OPCODE_HALT = 99
 
-    def __init__(self, inp, mem_size = 4096):
+    def __init__(self, mem_size = 4096):
         self.opcodes = {
             1: self.op_sum,
             2: self.op_mul,
@@ -16,17 +17,16 @@ class intcode_machine:
             99: self.op_halt
         }
         self.mem_size = mem_size
-        self.inp = inp
         self.outp = 0
         self.reset()
 
     def reset(self):
         self.mem = [0] * self.mem_size
+        self.input_queue = deque()
         self.pc = 0
         self.mode1 = 0
         self.mode2 = 0
         self.mode3 = 0
-        self.input_pos = 0
 
     def read(self, address, mode):
         a = self.mem[address]
@@ -62,9 +62,7 @@ class intcode_machine:
         self.pc += 4
 
     def op_input(self):
-        i = self.inp[self.input_pos]
-        self.input_pos += 1
-        self.write(i, self.pc+1, self.mode1)
+        self.write(self.input_queue.popleft(), self.pc+1, self.mode1)
         self.pc += 2
 
     def op_output(self):
@@ -127,7 +125,8 @@ class intcode_machine:
             i += 1
     
     def add_input(self, i):
-        self.inp.append(i)
+        #self.inp.append(i)
+        self.input_queue.append(i)
 
     def run(self):
         while True:
@@ -145,7 +144,9 @@ def part1():
     for i in list(phases):
         out = 0
         for x in range(5):
-            im = intcode_machine([i[x], out])
+            im = intcode_machine()
+            im.add_input(i[x])
+            im.add_input(out)
             im.load_mem("7.txt")
             out = im.run()
         if out > max_out:
@@ -161,10 +162,11 @@ def part2():
         out = 0
         done = 0
         for x in range(5):
-            im = intcode_machine([i[x], out])
+            im = intcode_machine()
+            im.add_input(i[x])
             im.load_mem("7.txt")
             ims.append(im)
-            out = im.run()
+            #out = im.run()
         while done == 0:
             for x in range(5):
                 ims[x].add_input(out)
