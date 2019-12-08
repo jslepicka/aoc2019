@@ -17,12 +17,15 @@ def get_layers(image, width, height):
     return layers
 
 def merge_layers(layers):
-    layer_len = len(layers[0])
-    merged = [None] * layer_len
-    for l in layers:
-        for i in range(layer_len):
-            if l[i] != 2 and merged[i] is None:
-                merged[i] = l[i]
+    merged = layers[0]
+    num_layers = len(layers)
+    for pixel in range(len(merged)):
+        layer = 1
+        m = merged[pixel]
+        while m == 2 and layer < num_layers:
+            m = layers[layer][pixel]
+            layer += 1
+        merged[pixel] = m
     return merged
 
 def print_image(image, width, height):
