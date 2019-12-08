@@ -1,7 +1,6 @@
 from collections import Counter
 
 def read_image(filename):
-    image = []
     with open(filename) as file:
         image = [int(f) for f in file.readline().rstrip()]
     return image
@@ -29,11 +28,14 @@ def merge_layers(layers):
     return merged
 
 def print_image(image, width, height):
+    char_width = 2
+    fill_char = "X" * char_width
+    empty_char = " " * char_width
     start = 0
     end = width
     while end <= width * height:
-        print("".join(["XX" if s == 1 else "  " for s in image[start:end]]))
-        start += width
+        print("".join([fill_char if s == 1 else empty_char for s in image[start:end]]))
+        start = end
         end += width
 
 def part1(image):
