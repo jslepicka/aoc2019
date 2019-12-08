@@ -1,5 +1,3 @@
-from collections import Counter
-
 def read_image(filename):
     with open(filename) as file:
         image = [int(f) for f in file.readline().rstrip()]
@@ -29,7 +27,7 @@ def merge_layers(layers):
 
 def print_image(image, width, height):
     char_width = 2
-    fill_char = "X" * char_width
+    fill_char = "#" * char_width
     empty_char = " " * char_width
     start = 0
     end = width
@@ -40,9 +38,8 @@ def print_image(image, width, height):
 
 def part1(image):
     layers = get_layers(image, 25, 6)
-    layer_stats = [Counter(l) for l in layers]
-    layer_stats.sort(key=lambda k: k[0])
-    return layer_stats[0][1] * layer_stats[0][2]
+    least0 = min(layers, key=lambda layer: layer.count(0))
+    return least0.count(1) * least0.count(2)
 
 def part2(image):
     layers = get_layers(image, 25, 6)
