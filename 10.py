@@ -43,34 +43,21 @@ for s in asteroids:
 
 print("computed distances and angles")
 
-#now we have distances between every asteroid.  find all the cases where
-#distance start<->end == distance start<->point + distance end<->point
-
 def part1():
-    for s in asteroids:
-        start = asteroids[s]
-        #print("start point is %d, %d" % (start.x, start.y))
-        for e in start.distances:
-            end = asteroids[e]
-            #print(" end point is %d, %d distance: %f" % (end.x, end.y, start.distances[e]))
-            #for every asteroid p that is not start and not end
-            #find sum of distances between p and start and p and end
-            blocked = 0
-            for x in asteroids:
-                p = asteroids[x]
-                if p is not start and p is not end:
-                    d_start = p.distances[s]
-                    d_end = p.distances[e]
-                    d_sum = d_start + d_end
-                    #print("  %d %d %.4f %.4f %.4f" % (p.x, p.y, d_start, d_end, d_sum))
-                    if abs(d_sum - start.distances[e]) < .00001:
-                        blocked = 1
-                        break
-            if blocked == 0:
-                start.visibility += 1
-    best = max(asteroids, key=lambda x:asteroids[x].visibility)
-    #print("%s can see %d asteroids" % (best, asteroids[best].visibility))
-    return best
+    counts = {}
+    for a in asteroids:
+        ast = asteroids[a]
+        angles = sorted(ast.angles, key=lambda k:ast.angles[k])
+        last_angle = None
+        count = 0
+        for ang in angles:
+            if last_angle is None or abs(ast.angles[ang] - last_angle) > .0001:
+                count += 1
+            last_angle = ast.angles[ang]
+        counts[a] = count
+    max_a = max(counts, key=lambda k:counts[k])
+    max_count = counts[max_a]
+    return (max_a, max_count)
 
 def part2(best, kill):
     kill_order = {}
@@ -102,6 +89,6 @@ def part2(best, kill):
     k = kill_order[kill]
     return k[0] * 100 + k[1]
 
-best = part1()
-print(asteroids[best].visibility)
+(best, max_count) = part1()
+print(max_count)
 print(part2(best, 200))
