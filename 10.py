@@ -45,19 +45,19 @@ print("computed distances and angles")
 
 def part1():
     counts = {}
-    for a in asteroids:
-        ast = asteroids[a]
+    for ast_coord in asteroids:
+        ast = asteroids[ast_coord]
         angles = sorted(ast.angles, key=lambda k:ast.angles[k])
         last_angle = None
         count = 0
-        for ang in angles:
-            if last_angle is None or abs(ast.angles[ang] - last_angle) > .0001:
+        for angle in angles:
+            if last_angle is None or abs(ast.angles[angle] - last_angle) > .0001:
                 count += 1
-            last_angle = ast.angles[ang]
-        counts[a] = count
-    max_a = max(counts, key=lambda k:counts[k])
-    max_count = counts[max_a]
-    return (max_a, max_count)
+            last_angle = ast.angles[angle]
+        counts[ast_coord] = count
+    max_ast_coord = max(counts, key=lambda k:counts[k])
+    max_count = counts[max_ast_coord]
+    return (max_ast_coord, max_count)
 
 def part2(best, kill):
     kill_order = {}
