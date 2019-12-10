@@ -59,25 +59,25 @@ def part1():
     max_count = counts[max_ast_coord]
     return (max_ast_coord, max_count)
 
-def part2(best, kill):
+def part2(ast, kill):
     kill_order = {}
-    best = asteroids[best]
-    best_angles = sorted(best.angles, key=lambda k:best.angles[k])
+    ast = asteroids[ast]
+    angles = sorted(ast.angles, key=lambda k:ast.angles[k])
 
     paths = []
     path = None
-    last_a = None
-    for a in best_angles:
-        if last_a is not None and abs(best.angles[a] - last_a) < .00001:
-            path.append(a)
+    last_angle = None
+    for angle in angles:
+        if last_angle is not None and abs(ast.angles[angle] - last_angle) < .00001:
+            path.append(angle)
         else:
             if path is not None:
-                paths.append(sorted(path, key=lambda k:best.distances[k]))
+                paths.append(sorted(path, key=lambda k:ast.distances[k]))
             path = []
-            path.append(a)
-        last_a = best.angles[a]
+            path.append(angle)
+        last_angle = ast.angles[angle]
     if len(path) > 0:
-        paths.append(sorted(path, key=lambda k:best.distances[k]))
+        paths.append(sorted(path, key=lambda k:ast.distances[k]))
 
     found = 0
     while sum(len(p) for p in paths) > 0:
