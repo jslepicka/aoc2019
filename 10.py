@@ -51,7 +51,7 @@ def part1():
         last_angle = None
         count = 0
         for angle in angles:
-            if last_angle is None or abs(ast.angles[angle] - last_angle) > .0001:
+            if last_angle is None or abs(ast.angles[angle] - last_angle) > .00001:
                 count += 1
             last_angle = ast.angles[angle]
         counts[ast_coord] = count
