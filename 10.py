@@ -42,6 +42,10 @@ for s in asteroids:
 
 print("computed distances and angles")
 
+def equalish(a, b):
+    return True if abs(a-b) < .00001 else False
+
+
 def part1():
     counts = {}
     for ast_coord in asteroids:
@@ -50,7 +54,7 @@ def part1():
         last_angle = None
         count = 0
         for angle in angles:
-            if last_angle is None or abs(ast.angles[angle] - last_angle) > .00001:
+            if last_angle is None or not equalish(ast.angles[angle], last_angle):
                 count += 1
             last_angle = ast.angles[angle]
         counts[ast_coord] = count
@@ -67,7 +71,7 @@ def part2(ast, kill):
     path = None
     last_angle = None
     for angle in angles:
-        if last_angle is not None and abs(ast.angles[angle] - last_angle) < .00001:
+        if last_angle is not None and equalish(ast.angles[angle], last_angle):
             path.append(angle)
         else:
             if path is not None:
