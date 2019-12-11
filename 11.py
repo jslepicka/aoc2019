@@ -200,11 +200,11 @@ def paint(start_color):
                 painted[(x,y)] = 1
                 hull[(x,y)] = color
                 if dir == DIR_N:
-                    y += 1
+                    y -= 1
                 elif dir == DIR_E:
                     x += 1
                 elif dir == DIR_S:
-                    y -= 1
+                    y += 1
                 elif dir == DIR_W:
                     x -= 1
                 #print("now pos: %d, %d" % (x, y))
@@ -222,7 +222,7 @@ def part2():
     min_y = min(hull, key=lambda k:k[1])[1]
     max_y = max(hull, key=lambda k:k[1])[1]
 
-    for y in reversed(range(min_y, max_y+1)):
+    for y in range(min_y, max_y+1):
         char_width = 2
         line = ""
         for x in range(min_x, max_x + 1):
