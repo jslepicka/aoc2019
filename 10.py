@@ -45,7 +45,9 @@ print("computed distances and angles")
 def equalish(a, b):
     return True if abs(a-b) < .00001 else False
 
-
+#sort asteroids by angle
+#get count of each "unique" angle
+#return highest unique count
 def part1():
     counts = {}
     for ast_coord in asteroids:
@@ -62,6 +64,12 @@ def part1():
     max_count = counts[max_ast_coord]
     return (max_ast_coord, max_count)
 
+#sort asteroids by angle
+#for each angle, create a list of all the asteroids on that angle
+#sort those lists by distance order
+#then, iterate over list of path lists
+#pop (kill) the first asteroid off of each list
+#repeat as long as there are asteroids left
 def part2(ast, kill):
     kill_order = {}
     ast = asteroids[ast]
