@@ -71,7 +71,7 @@ def part2(draw):
                         ball_x = x
                     elif o == 3:
                         paddle_x = x
-                    vram[y * SCREEN_X  + x] = o
+                    vram[y * SCREEN_X + x] = o
                 out_phase = 0
         elif (ret == im.OPCODE_INPUT):
             if draw:
