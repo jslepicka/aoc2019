@@ -1,5 +1,5 @@
 from collections import deque
-import os
+import os, getopt, sys
 
 class intcode_machine:
     OPCODE_HALT = 99
@@ -179,10 +179,10 @@ SCREEN_Y = 21
 def draw_screen(vram, score):
     tile_chars = {
         0: ' ',
-        1: '|',
-        2: '#',
-        3: '-',
-        4: '.'
+        1: '\u2591',
+        2: '\u2588',
+        3: '=',
+        4: 'o'
     }
     os.system('cls')
     for y in range(SCREEN_Y):
@@ -235,5 +235,14 @@ def part2(draw):
             im.add_input(joy)
     return score
 
+draw = False
+try:
+    args, _ = getopt.getopt(sys.argv[1:], "d")
+    for arg, _ in args:
+        if arg == '-d':
+            draw = True
+except getopt.GetoptError:
+    pass
+
 print(part1())
-print(part2(False))
+print(part2(draw))
