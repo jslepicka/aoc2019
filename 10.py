@@ -73,20 +73,20 @@ def part1():
 def part2(ast, kill):
     kill_order = {}
     ast = asteroids[ast]
-    angles = sorted(ast.angles, key=lambda k:ast.angles[k])
+    ast_coords = sorted(ast.angles, key=lambda k:ast.angles[k])
 
     paths = []
     path = None
-    last_angle = None
-    for angle in angles:
-        if last_angle is not None and equalish(ast.angles[angle], last_angle):
-            path.append(angle)
+    last_coord = None
+    for ast_coord in ast_coords:
+        if last_coord is not None and equalish(ast.angles[ast_coord], last_coord):
+            path.append(ast_coord)
         else:
             if path is not None:
                 paths.append(sorted(path, key=lambda k:ast.distances[k]))
             path = []
-            path.append(angle)
-        last_angle = ast.angles[angle]
+            path.append(ast_coord)
+        last_coord = ast.angles[ast_coord]
     if len(path) > 0:
         paths.append(sorted(path, key=lambda k:ast.distances[k]))
 
