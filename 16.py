@@ -7,19 +7,16 @@ def part1(input_signal):
     input_signal = [int(x) for x in input_signal]
     input_len = len(input_signal)
     pattern = [0, 1, 0, -1]
-    total = input_signal
     for phase in range(100):
-        input_signal = total
-        total = []
         for offset in range(len(input_signal)):
             digit = offset
             sum = 0
             for i in input_signal[digit:]:
-                coeff_offset = (((digit+1) // (offset+1)) % 4)
+                coeff_offset = ((digit+1) // (offset+1)) % 4
                 sum += i * pattern[coeff_offset]
                 digit += 1
-            total.append(abs(sum) % 10)
-    return "".join([str(i) for i in total[:8]])
+            input_signal[offset] = abs(sum) % 10
+    return "".join([str(i) for i in input_signal[:8]])
 
 def part2(input_signal):
     #at the halfway point, all of the coefficients change to 1
@@ -35,7 +32,7 @@ def part2(input_signal):
             ps = phase_signal[i]
             phase_signal[i] = phase_signal_sum % 10
             phase_signal_sum -= ps
-    return("".join([str(i) for i in phase_signal[:8]]))
+    return "".join([str(i) for i in phase_signal[:8]])
 
 input_signal = read_input()
 print(part1(read_input()))
