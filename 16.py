@@ -25,14 +25,14 @@ def part2(input_signal):
     input_signal *= 10000
     input_len = len(input_signal)
     offset = int(input_signal[:7])
-    phase_signal = [int(x) for x in input_signal[offset:]]
+    input_signal = [int(x) for x in input_signal[offset:]]
     for phase in range(100):
-        phase_signal_sum = sum(phase_signal)
-        for i in range(0, len(phase_signal)):
-            ps = phase_signal[i]
-            phase_signal[i] = phase_signal_sum % 10
-            phase_signal_sum -= ps
-    return "".join([str(i) for i in phase_signal[:8]])
+        input_signal_sum = sum(input_signal)
+        for i in range(0, len(input_signal)):
+            temp = input_signal[i]
+            input_signal[i] = input_signal_sum % 10
+            input_signal_sum -= temp
+    return "".join([str(i) for i in input_signal[:8]])
 
 input_signal = read_input()
 print(part1(read_input()))
