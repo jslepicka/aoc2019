@@ -24,7 +24,7 @@ def part1():
     intersections = []
     for y in range(min_y, max_y + 1):
         line = ""
-        for x in range(min_x, max_x):
+        for x in range(min_x, max_x + 1):
             if view[(x,y)] == '#' and x > min_x and x < max_x and y > min_y and y < max_y:
                 if view[(x-1,y)] == '#' and view[(x+1, y)] == '#' and view[(x, y-1)] == '#' and view[(x, y+1)] == '#':
                     line += 'O'
@@ -35,3 +35,5 @@ def part1():
                 line += view[(x,y)]
         print(line)
     print(sum([x * y for x,y in intersections]))
+
+part1()
