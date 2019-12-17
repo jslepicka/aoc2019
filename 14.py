@@ -62,7 +62,9 @@ def part2():
 
     while True:
         ore = request(products, "FUEL", fuel)
-        if ore < 1e12:
+        if ore == 1e12:
+            return fuel
+        elif ore < 1e12:
             if closest_under is None or fuel > closest_under:
                 closest_under = fuel
         else:
