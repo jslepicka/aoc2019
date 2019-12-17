@@ -18,19 +18,23 @@ def load_data(filename):
             products[product_name] = p
     return products
 
-def request(products, product_name, requested_qty, depth):
+def request(products, product_name, requested_qty, depth = 0):
+    debug = 0
     ore_mined = 0
     depth += 1
-    print(" " * depth + "requesting %d %s" % (requested_qty, product_name))
+    if debug:
+        print(" " * depth + "requesting %d %s" % (requested_qty, product_name))
     if product_name == "ORE":
-        print(" " * depth + "mining ORE")
+        if debug:
+            print(" " * depth + "mining ORE")
         #ore_mined += requested_qty
         return requested_qty
     p = products[product_name]
 
     #if we have enough on hand, use it
     if p["on_hand"] >= requested_qty:
-        print(" " * depth + "using %d onhand" % p["on_hand"])
+        if debug:
+            print(" " * depth + "using %d onhand" % p["on_hand"])
         p["on_hand"] -= requested_qty
         return 0
     else:
@@ -41,13 +45,37 @@ def request(products, product_name, requested_qty, depth):
     orderable_qty = math.ceil(required_qty/p["min_order"]) * p["min_order"]
     multiplier = orderable_qty // p["min_order"]
 
-    print(" " * depth + "%d (x%d) %s requires:" % (orderable_qty, multiplier, product_name))
+    if debug:
+        print(" " * depth + "%d (x%d) %s requires:" % (orderable_qty, multiplier, product_name))
     for pre, pre_qty in products[product_name]["precursors"]:
-        print(" " * depth + " %d %s" % (pre_qty * multiplier, pre))
+        if debug:
+            print(" " * depth + " %d %s" % (pre_qty * multiplier, pre))
         ore_mined += request(products, pre, pre_qty * multiplier, depth)
     p["on_hand"] += orderable_qty
     p["on_hand"] -= requested_qty
     return ore_mined
 
+def part2():
+    fuel = 1
+    closest_under = None
+    closest_over = None
+
+    while True:
+        ore = request(products, "FUEL", fuel)
+        if ore < 1e12:
+            if closest_under is None or fuel > closest_under:
+                closest_under = fuel
+        else:
+            if closest_over is None or fuel < closest_over:
+                closest_over = fuel
+        if closest_over is None:
+            fuel *= 2
+        else:
+            last = fuel
+            fuel = (closest_under + closest_over) // 2
+            if fuel == last:
+                return fuel
+
 products = load_data("14.txt")
-print(request(products, "FUEL", 1, 0))
+print(request(products, "FUEL", 1))
+print(part2())
