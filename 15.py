@@ -46,6 +46,7 @@ def part1():
     decisions[(x,y)] = decision(None)
     distance = 0
     o2_distance = 0
+    o2_coord = (0,0)
     while not im.halted:
         ret, val = im.run()
 
@@ -90,9 +91,11 @@ def part1():
             elif val == 2 and (x,y) not in view:
                 view[(x,y)] = '\u2588'
                 o2_distance = distance
+                o2_coord = (x,y)
                 print("found o2 at %d, %d" % (x,y))
             #print_view(view)
     print_view(view)
-    return o2_distance
+    return view, o2_distance, o2_coord
 
-print(part1())
+view, o2_distance, o2_coord = part1()
+print(o2_distance)
