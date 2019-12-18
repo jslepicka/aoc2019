@@ -80,7 +80,7 @@ def part1():
                 view[(x,y)] = '#'
                 x = last_x
                 y = last_y
-            elif val == 1 or val == 2 and (x,y) not in view:
+            elif (val == 1 or val == 2) and (x,y) not in view:
                 view[(x,y)] = '.'
                 if val == 2:
                     view[(x,y)] = '\u2588'
