@@ -1,4 +1,5 @@
 from intcode_machine import intcode_machine
+import os
 
 def print_view(view):
     max_x = max([x for x, y in view])
@@ -18,16 +19,15 @@ class decision:
     def __init__(self, entered_from):
         self.choices = [1, 2, 3, 4]
         self.entered_from = entered_from
+        #move the direction we entered from to the back of the list
         if entered_from is not None:
             self.choices.remove(entered_from)
+            self.choices.append(entered_from)
     def get_choice(self):
         if len(self.choices) > 0:
-            #print(self.choices)
-            d = self.choices.pop(0)
-            #print("d: %d" % d)
-            return d
+            return self.choices.pop(0)
         else:
-            return self.entered_from
+            return None
 
 def part1():
     view = {}
@@ -55,22 +55,14 @@ def part1():
             #print("loc: %d, %d, decision: %i" % (x,y,i))
             last_x = x
             last_y = y
-            if i == 1:
-                y -= 1
-            elif i == 2:
-                y += 1
-            elif i == 3:
-                x -= 1
-            elif i == 4:
-                x += 1
+            move = {1: (0,-1), 2: (0, 1), 3: (-1, 0), 4: (1, 0)}[i]
+            x += move[0]
+            y += move[1]
             if (x,y) not in decisions:
-                ef = 0
-                if i & 1:
-                    ef = i + 1
-                else:
-                    ef = i - 1
+                #provide the new node the direction we're entering from
+                #i.e., the opposite of the direction we're moving
+                ef = i + 1 if (i & 1) else i - 1
                 decisions[(x,y)] = decision(ef)
-                #view[(x,y)] = '?'
             im.add_input(i)
         elif ret == im.OPCODE_OUTPUT:
             #print(val)
@@ -85,16 +77,18 @@ def part1():
                 if val == 2:
                     view[(x,y)] = '\u2588'
                     o2_coord = (x,y)
+                #if we moved to a new node
                 if (x,y) not in nodes:
+                    #set the new node's neighbor list to the last node
                     nodes[(x,y)] = [(last_x, last_y)]
+                    #add the new node to the last node's neighbor list
                     nodes[(last_x, last_y)].append((x,y))
 
-            #print_view(view)
-    print(len(view))
     print_view(view)
     return view, nodes, o2_coord
 
 def part2(coord, limit = None):
+    #breadth first search between limit node or to fartheset node if limit is None
     visited = {}
     queue = []
     queue.append((coord, 0))
@@ -102,6 +96,9 @@ def part2(coord, limit = None):
     depth = 0
     while queue:
         s, d = queue.pop(0)
+        view[s] = '\u2591'
+        #os.system('cls')
+        #print_view(view)
         if limit is not None and s == limit:
             return d
         if d > depth:
