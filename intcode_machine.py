@@ -5,7 +5,7 @@ class intcode_machine:
     OPCODE_INPUT = 3
     OPCODE_OUTPUT = 4
 
-    def __init__(self, mem_size = 4096):
+    def __init__(self, program = None, mem_size = 4096):
         self.opcodes = {
             1: self.op_sum,
             2: self.op_mul,
@@ -20,10 +20,13 @@ class intcode_machine:
         }
         self.mem_size = mem_size
         self.outp = 0
+        self.program = program
         self.reset()
 
     def reset(self):
         self.mem = [0] * self.mem_size
+        if self.program is not None:
+            self.load_mem(self.program)
         self.input_queue = deque()
         self.pc = 0
         self.mode1 = 0
