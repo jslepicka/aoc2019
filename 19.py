@@ -37,8 +37,16 @@ def part1():
     affected_count = list(view.values()).count("#")
     return affected_count
 
+#instead of searching whole space, travel down the left side,
+#incrementing x if the space is empty, and checking up and to the right
+#99 units to see if the beam exists there
+#
+#I spent hours attempting to solve with trig.  The beam doesn't behave
+#as expected
+
 def part2():
     x = 0
+    #start at 10 since first few rows are flaky
     for y in range(10,5000):
         input_phase = 0
         inside_beam = 0
