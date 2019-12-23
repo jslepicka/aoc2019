@@ -56,7 +56,7 @@ i = deck.index(2019)
 if i == 6831:
     print(x)
 x += 1
-#print("card 2019 is at position: %d" % i)
+print("card 2019 is at position: %d" % i)
 
 def rev_deal_into_new_stack(deck_len, pos):
     new_pos = (deck_len - 1) - pos
