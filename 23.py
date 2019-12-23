@@ -72,7 +72,7 @@ class network():
             halted = 0
             for c in self.computers:
                 if not c.im.halted:
-                    c.run(10)
+                    c.run(1000)
                 else:
                     halted += 1
             if halted == self.num_computers:
