@@ -24,6 +24,11 @@ class computer():
                             self.im.add_input(data)
                 else:
                     self.im.add_input(-1)
+                #im's run function returns OPCODE_INPUT mid input instruction
+                #when it's input queue is empty.
+                #In single step mode, this really shouldn't burn a cycle, so
+                #add one back in
+                cycles += 1
             elif ret == self.im.OPCODE_OUTPUT:
                 self.output_queue.append(data)
                 if len(self.output_queue) == 3:
@@ -36,10 +41,6 @@ class computer():
                 data.append(self.output_queue.pop(0))
             print("%d sending %s to %d" % (self.id, data, dest))
 
-            if dest == 255:
-                print(data)
-                quit()
-
             self.network.rx(dest, data)
 
 class network():
@@ -48,24 +49,51 @@ class network():
         self.computers = []
         for i in range(self.num_computers):
             self.computers.append(computer(i, self))
+        self.nat = None
+        self.last_nat_y = None
+        self.part1 = None
+        self.part2 = None
+
     #receive data from computer
     def rx(self, dest, data):
-        while data:
-            self.computers[dest].input_queue.append(data.pop(0))
+        if dest == 255: #NAT
+            print("NAT received %s" % data)
+            self.nat = data
+            if self.part1 is None:
+                self.part1 = data[1]
+        else:
+            self.tx(dest, data)
     #transmit data to computer
     def tx(self, dest, data):
-        1
+        while data:
+            self.computers[dest].input_queue.append(data.pop(0))
     def run(self):
-        halted = 0
-        for c in self.computers:
-            if not c.im.halted:
-                c.run(10)
-            else:
-                halted += 1
-        if halted == self.num_computers:
-            print("All computers halted")
+        while True:
+            halted = 0
+            for c in self.computers:
+                if not c.im.halted:
+                    c.run(10)
+                else:
+                    halted += 1
+            if halted == self.num_computers:
+                print("All computers halted")
+            #check input queue lengths
+            queue_len = 0
+            for c in self.computers:
+                queue_len += len(c.input_queue)
+            if (queue_len == 0 and self.nat is not None):
+                print("queues empty; transmitting %s" % self.nat)
+                if self.nat[1] == self.last_nat_y:
+                    self.part2 = self.last_nat_y
+                    print("part1: %d\npart2: %d" % (self.part1, self.part2))
+                    return
+                else:
+                    self.last_nat_y = self.nat[1]
+                self.tx(0, self.nat)
+                self.nat = None
+
+
 
 net = network()
-while True:
-    net.run()
+net.run()
 

@@ -139,7 +139,7 @@ class intcode_machine:
     def add_input(self, i):
         self.input_queue.append(i)
 
-    def run(self):
+    def run(self, single_step = False):
         if self.halted:
             return None
         while True:
@@ -151,5 +151,8 @@ class intcode_machine:
             elif op == self.OPCODE_INPUT and len(self.input_queue) == 0:
                 return (self.OPCODE_INPUT, None)
             self.opcodes[op]()
-            if op == 4:
+            if op == self.OPCODE_OUTPUT:
                 return (self.OPCODE_OUTPUT, self.outp)
+            if single_step:
+                return (None, None)
+            
